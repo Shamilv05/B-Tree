@@ -11,6 +11,7 @@ public:
     Node(uint16_t, bool);
     void traverse();
     std::shared_ptr<Node> search(int64_t key);
+friend class BTree;
 };
 
 Node::Node(uint16_t degree, bool _is_leaf) {
