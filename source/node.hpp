@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-class Node {
+class Node : public std::enable_shared_from_this<Node> {
     std::vector<int64_t> keys;
     uint16_t min_degree;
     uint16_t current_number_of_keys;
@@ -10,7 +10,7 @@ class Node {
 public:
     Node(uint16_t, bool);
     void traverse();
-    Node* search(int64_t key);
+    std::shared_ptr<Node> search(int64_t key);
 };
 
 Node::Node(uint16_t degree, bool _is_leaf) {
@@ -31,6 +31,23 @@ void Node::traverse() {
         std::cout << " " << keys[i];
     }
     if (is_leaf == false) {
-        std::cout << " " << keys[i];
+        children[i]->traverse();
     }
+}
+
+std::shared_ptr<Node> Node::search(int64_t key) {
+    uint16_t i = 0;
+    while (i < current_number_of_keys && keys[i] < key) {
+        i++;
+    }
+
+    if (keys[i] == key) {
+        return shared_from_this();
+    }
+
+    if (is_leaf == true) {
+        return nullptr;
+    }
+
+    return children[i]->search(key);
 }
