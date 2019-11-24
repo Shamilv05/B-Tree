@@ -8,7 +8,6 @@ public:
     void traverse_and_collect(std::vector<int64_t> &keys_arr);
     void delete_node(int64_t key);
     void insert(int64_t key);
-    void merge(BTree &first, BTree &second);
     Node* search(int64_t key);
 };
 
