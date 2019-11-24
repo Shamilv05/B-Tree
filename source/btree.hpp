@@ -1,23 +1,49 @@
 #include "node.hpp"
 
 class BTree {
-    std::shared_ptr<Node> root;
-    uint16_t min_deg;
+    Node* root;
+    int min_deg;
 public:
-    BTree(uint16_t);
+    BTree(int);
     void traverse();
-    std::shared_ptr<Node> search(int64_t key);
+    void insert(int64_t key);
+    Node* search(int64_t key);
 };
 
-BTree::BTree(uint16_t degree) {
+BTree::BTree(int degree) {
     root = nullptr;
     min_deg = degree;
 }
 
 void BTree::traverse() {
-    return root->traverse();
+    if (root != nullptr) {
+        root->traverse();
+    }
 }
 
-std::shared_ptr<Node> BTree::search(int64_t key) {
-    return (root = nullptr) ? nullptr : root->search(key);
+Node* BTree::search(int64_t key) {
+    return (root == nullptr) ? nullptr : root->search(key);
+}
+
+void BTree::insert(int64_t key) {
+    if (root == nullptr) {
+        root = new Node(min_deg, true);
+        root->keys[0] = key;
+        root->current_number_of_keys = 1;
+    } else {
+        if (root->current_number_of_keys == 2 * min_deg - 1) {
+            Node* new_root = new Node(min_deg, false);
+            new_root->children[0] = root;
+            new_root->split_child(0, root);
+
+            int index_of_key = 0;
+            if (new_root->keys[0] < key) {
+                index_of_key++;
+            }
+            new_root->children[index_of_key]->insert_to_unfilled_node(key);
+            root = new_root;
+        } else {
+            root->insert_to_unfilled_node(key);
+        }
+    }
 }
