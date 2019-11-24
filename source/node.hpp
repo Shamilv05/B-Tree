@@ -5,11 +5,12 @@ class Node {
     std::vector<int64_t> keys;
     int min_degree;
     int current_number_of_keys;
+    bool is_deleted;
     std::vector<Node*> children;
     bool is_leaf;
 public:
     Node(int, bool);
-    void traverse();
+    void traverse_and_collect(std::vector<int64_t> &keys_arr);
     void insert_to_unfilled_node(int64_t key);
     void split_child(int child_index, Node* child);
     Node* search(int64_t key);
@@ -19,6 +20,7 @@ friend class BTree;
 Node::Node(int degree, bool _is_leaf) {
     min_degree = degree;
     is_leaf = _is_leaf;
+    is_deleted = false;
     keys = std::vector<int64_t>(2 * min_degree - 1);
     children = std::vector<Node*>(2 * min_degree);
     current_number_of_keys = 0;
@@ -28,17 +30,19 @@ Node::Node(int degree, bool _is_leaf) {
  * function for traversing all nodes of subtree,
  * rooted by this node
  */
-void Node::traverse() {
+void Node::traverse_and_collect(std::vector<int64_t> &keys_arr) {
     int i;
     for (i = 0; i < current_number_of_keys; i++) {
         if (!is_leaf) {
-            children[i]->traverse();
+            children[i]->traverse_and_collect(keys_arr);
         }
-
-        std::cout << " " << keys[i];
+        if (!is_deleted) {
+            keys_arr.push_back(keys[i]);
+            std::cout<< " " << keys[i];
+        }
     }
     if (!is_leaf) {
-        children[i]->traverse();
+        children[i]->traverse_and_collect(keys_arr);
     }
 }
 
